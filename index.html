@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FriendGPT</title>
+
+    <!-- Font Awesome Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            color: #ffffff;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(88, 28, 135, 0.25), transparent 30%),
+                radial-gradient(circle at 85% 80%, rgba(37, 99, 235, 0.20), transparent 30%),
+                #080808;
+        }
+
+        /* =========================
+           HEADER
+        ========================== */
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            height: 70px;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 25px;
+
+            background: rgba(10, 10, 10, 0.78);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: 800;
+
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            background: linear-gradient(
+                90deg,
+                #ffffff,
+                #b8b8ff,
+                #ffffff
+            );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-icon {
+            font-size: 25px;
+            -webkit-text-fill-color: initial;
+        }
+
+        /* =========================
+           MAIN CONTAINER
+        ========================== */
+
+        .container {
+            width: min(900px, 92%);
+            margin: auto;
+
+            padding-top: 75px;
+            padding-bottom: 130px;
+        }
+
+        /* =========================
+           WELCOME
+        ========================== */
+
+        .welcome {
+            text-align: center;
+            margin-bottom: 45px;
+
+            animation: fadeUp 0.7s ease;
+        }
+
+        .welcome h1 {
+            font-size: clamp(30px, 5vw, 48px);
+            font-weight: 800;
+
+            margin-bottom: 12px;
+
+            background: linear-gradient(
+                90deg,
+                #ffffff,
+                #a78bfa,
+                #60a5fa,
+                #ffffff
+            );
+
+            background-size: 250% auto;
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+
+            animation: gradientMove 5s linear infinite;
+        }
+
+        .welcome p {
+            color: #a1a1aa;
+            font-size: 16px;
+        }
+
+        /* =========================
+           CHAT AREA
+        ========================== */
+
+        #chat {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .message {
+            max-width: 80%;
+
+            padding: 13px 17px;
+
+            border-radius: 16px;
+
+            line-height: 1.5;
+            font-size: 15px;
+
+            animation: messageIn 0.35s ease;
+        }
+
+        .user-message {
+            align-self: flex-end;
+
+            background: linear-gradient(
+                135deg,
+                #2563eb,
+                #4f46e5
+            );
+
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.20);
+
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+
+            color: #d4d4d8;
+
+            background: rgba(255, 255, 255, 0.045);
+
+            border: 1px solid rgba(255, 255, 255, 0.07);
+
+            border-bottom-left-radius: 5px;
+        }
+
+        /* =========================
+           PROFILE CARD
+        ========================== */
+
+        .profile {
+            width: 100%;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            text-align: center;
+
+            padding: 32px 25px;
+
+            margin-top: 5px;
+
+            border-radius: 28px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.075),
+                    rgba(255, 255, 255, 0.025)
+                );
+
+            border: 1px solid rgba(255, 255, 255, 0.10);
+
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+
+            animation: profileIn 0.6s cubic-bezier(.22, 1, .36, 1);
+        }
+
+        /* =========================
+           PROFILE IMAGE
+        ========================== */
+
+        .profile img {
+            width: 250px;
+            height: 250px;
+
+            object-fit: cover;
+
+            border-radius: 24px;
+
+            border: 2px solid rgba(255, 255, 255, 0.12);
+
+            box-shadow:
+                0 20px 50px rgba(0, 0, 0, 0.55),
+                0 0 35px rgba(99, 102, 241, 0.10);
+
+            transition:
+                transform 0.4s ease,
+                box-shadow 0.4s ease;
+        }
+
+        .profile img:hover {
+            transform: scale(1.035);
+
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.65),
+                0 0 45px rgba(99, 102, 241, 0.22);
+        }
+
+        /* =========================
+           PROFILE INFO
+        ========================== */
+
+        .profile-info {
+            margin-top: 22px;
+            width: 100%;
+        }
+
+        .profile-info h2 {
+            font-size: clamp(23px, 4vw, 30px);
+            line-height: 1.25;
+
+            margin-bottom: 22px;
+
+            background: linear-gradient(
+                90deg,
+                #ffffff,
+                #c4b5fd,
+                #93c5fd
+            );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* =========================
+           SOCIAL BUTTONS
+        ========================== */
+
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            gap: 14px;
+
+            flex-wrap: wrap;
+        }
+
+        .social-btn {
+            position: relative;
+
+            min-width: 155px;
+
+            padding: 13px 20px;
+
+            border-radius: 15px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 10px;
+
+            color: #ffffff;
+            text-decoration: none;
+
+            font-size: 15px;
+            font-weight: 700;
+
+            overflow: hidden;
+
+            border: 1px solid rgba(255, 255, 255, 0.10);
+
+            box-shadow:
+                0 10px 25px rgba(0, 0, 0, 0.25);
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                filter 0.25s ease;
+        }
+
+        /* Shine animation */
+
+        .social-btn::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: -120%;
+
+            width: 70%;
+            height: 100%;
+
+            background: linear-gradient(
+                110deg,
+                transparent,
+                rgba(255, 255, 255, 0.30),
+                transparent
+            );
+
+            transform: skewX(-20deg);
+
+            transition: left 0.6s ease;
+        }
+
+        .social-btn:hover::before {
+            left: 140%;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-5px) scale(1.025);
+
+            filter: brightness(1.08);
+        }
+
+        .social-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Icons */
+
+        .social-btn i {
+            position: relative;
+            z-index: 2;
+
+            width: 24px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 21px;
+
+            color: #ffffff;
+
+            transition:
+                transform 0.3s ease,
+                filter 0.3s ease;
+        }
+
+        .social-btn span {
+            position: relative;
+            z-index: 2;
+        }
+
+        .social-btn:hover i {
+            transform: scale(1.18) rotate(-4deg);
+
+            filter: drop-shadow(
+                0 0 5px rgba(255, 255, 255, 0.55)
+            );
+        }
+
+        /* Facebook */
+
+        .facebook {
+            background:
+                linear-gradient(
+                    135deg,
+                    #1877f2,
+                    #0d5bd7
+                );
+
+            box-shadow:
+                0 10px 28px rgba(24, 119, 242, 0.28);
+        }
+
+        .facebook:hover {
+            box-shadow:
+                0 15px 38px rgba(24, 119, 242, 0.48);
+        }
+
+        /* Instagram */
+
+        .instagram {
+            background:
+                linear-gradient(
+                    135deg,
+                    #833ab4 0%,
+                    #e1306c 48%,
+                    #f77737 100%
+                );
+
+            box-shadow:
+                0 10px 28px rgba(225, 48, 108, 0.28);
+        }
+
+        .instagram:hover {
+            box-shadow:
+                0 15px 38px rgba(225, 48, 108, 0.48);
+        }
+
+        /* =========================
+           INPUT AREA
+        ========================== */
+
+        .input-area {
+            position: fixed;
+
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            z-index: 999;
+
+            padding: 14px 20px 18px;
+
+            background:
+                linear-gradient(
+                    to top,
+                    rgba(8, 8, 8, 0.98),
+                    rgba(8, 8, 8, 0.82)
+                );
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .input-box {
+            width: min(850px, 100%);
+
+            margin: auto;
+
+            display: flex;
+            align-items: center;
+
+            padding: 6px 7px 6px 17px;
+
+            border-radius: 18px;
+
+            background: rgba(255, 255, 255, 0.055);
+
+            border: 1px solid rgba(255, 255, 255, 0.10);
+
+            box-shadow:
+                0 10px 35px rgba(0, 0, 0, 0.35);
+
+            transition:
+                border-color 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+        .input-box:focus-within {
+            border-color: rgba(129, 140, 248, 0.45);
+
+            box-shadow:
+                0 10px 35px rgba(0, 0, 0, 0.35),
+                0 0 25px rgba(99, 102, 241, 0.08);
+        }
+
+        #userInput {
+            flex: 1;
+
+            border: none;
+            outline: none;
+
+            background: transparent;
+
+            color: #ffffff;
+
+            font-size: 15px;
+
+            min-width: 0;
+        }
+
+        #userInput::placeholder {
+            color: #71717a;
+        }
+
+        #sendBtn {
+            width: 43px;
+            height: 43px;
+
+            border: none;
+
+            border-radius: 13px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+
+            color: #ffffff;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #4f46e5,
+                    #2563eb
+                );
+
+            box-shadow:
+                0 7px 20px rgba(37, 99, 235, 0.28);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        #sendBtn i {
+            font-size: 17px;
+        }
+
+        #sendBtn:hover {
+            transform: translateY(-2px) scale(1.04);
+
+            box-shadow:
+                0 10px 28px rgba(37, 99, 235, 0.45);
+        }
+
+        #sendBtn:active {
+            transform: scale(0.92);
+        }
+
+        /* =========================
+           ANIMATIONS
+        ========================== */
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes messageIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes profileIn {
+            from {
+                opacity: 0;
+                transform: translateY(25px) scale(0.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% center;
+            }
+
+            50% {
+                background-position: 100% center;
+            }
+
+            100% {
+                background-position: 0% center;
+            }
+        }
+
+        /* =========================
+           MOBILE
+        ========================== */
+
+        @media (max-width: 600px) {
+
+            header {
+                height: 62px;
+                padding: 0 17px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .container {
+                width: 94%;
+
+                padding-top: 55px;
+                padding-bottom: 120px;
+            }
+
+            .welcome {
+                margin-bottom: 35px;
+            }
+
+            .welcome h1 {
+                font-size: 31px;
+            }
+
+            .welcome p {
+                font-size: 14px;
+            }
+
+            .profile {
+                padding: 25px 17px;
+                border-radius: 23px;
+            }
+
+            .profile img {
+                width: 200px;
+                height: 200px;
+
+                border-radius: 20px;
+            }
+
+            .profile-info h2 {
+                font-size: 23px;
+                margin-bottom: 20px;
+            }
+
+            .social-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .social-btn {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .message {
+                max-width: 90%;
+                font-size: 14px;
+            }
+
+            .input-area {
+                padding: 10px 12px 13px;
+            }
+
+            .input-box {
+                border-radius: 16px;
+            }
+        }
+
+        /* Very small phones */
+
+        @media (max-width: 380px) {
+
+            .profile img {
+                width: 180px;
+                height: 180px;
+            }
+
+            .welcome h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <header>
+        <div class="logo">
+            <span class="logo-icon">🤖</span>
+            <span>FriendGPT</span>
+        </div>
+    </header>
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="container">
+
+        <div class="welcome" id="welcome">
+            <h1>Who do you want to know? 👀</h1>
+            <p>Ask me about someone from your friend group.</p>
+        </div>
+
+        <div id="chat"></div>
+
+    </main>
+
+
+    <!-- =========================
+         INPUT
+    ========================== -->
+
+    <div class="input-area">
+
+        <div class="input-box">
+
+            <input
+                type="text"
+                id="userInput"
+                placeholder="Ask about a friend..."
+                autocomplete="off"
+            >
+
+            <button id="sendBtn" type="button" aria-label="Send">
+                <i class="fa-solid fa-arrow-up"></i>
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* =========================================
+           FRIEND DATA
+        ========================================== */
+
+        const friends = {
+
+            "M.A. Ahsan Habib Abir": {
+                photo: "photos/abir.jpg",
+                facebook: "https://www.facebook.com/m.a.ahsanhabibabir",
+                instagram: "https://www.instagram.com/__.ahsan.04.__/"
+            },
+
+            "Tasnim Bhuiyan Protik": {
+                photo: "photos/protik.jpg",
+                facebook: "https://www.facebook.com/profile.php?id=61553408384216",
+                instagram: "https://www.instagram.com/protik_005/"
+            },
+
+            "Md. Nafiul Islam Dhrubo": {
+                photo: "photos/nafiul.jpg",
+                facebook: "https://www.facebook.com/muhammad.nafiul.islam.2005",
+                instagram: "https://www.instagram.com/md.nafiul_islam_/"
+            },
+
+            "Abdullah Al Rafid": {
+                photo: "photos/rafid.jpg",
+                facebook: "https://www.facebook.com/abd.rafid6",
+                instagram: "https://www.instagram.com/abd.rafid_/"
+            },
+
+            "Nitul Chowdhury": {
+                photo: "photos/nitul.jpg",
+                facebook: "https://www.facebook.com/nitulchowdhury319",
+                instagram: "https://www.instagram.com/_chowdhury._21/"
+            },
+
+            "Shafayet Faiyaz": {
+                photo: "photos/shafayet.jpg",
+                facebook: "https://www.facebook.com/shafayet.faiyaz.7",
+                instagram: "https://www.instagram.com/__shafayet_faiyaz__/"
+            },
+
+            "Zarin Tasnim Mouri": {
+                photo: "photos/mouri.jpg",
+                facebook: "https://www.facebook.com/zarintasnim.mouri",
+                instagram: "https://www.instagram.com/_._._m0uri_._._/"
+            },
+
+            "Adriana Nuha": {
+                photo: "photos/adriana.jpg",
+                facebook: "https://www.facebook.com/adriana.nuha.2024",
+                instagram: "https://www.instagram.com/adriana_nuha_/"
+            },
+
+            "Fariha Mahbub Labiba": {
+                photo: "photos/labiba.jpg",
+                facebook: "https://www.facebook.com/fariha.mahbub.labiba",
+                instagram: "https://www.instagram.com/labiibbaa/"
+            },
+
+            "Dipi Sharleen": {
+                photo: "photos/dipi.jpg",
+                facebook: "https://www.facebook.com/dp.s.m.655097",
+                instagram: "https://www.instagram.com/dp_s_m_/"
+            }
+
+        };
+
+
+        /* =========================================
+           HTML ESCAPE
+        ========================================== */
+
+        function escapeHTML(text) {
+
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        /* =========================================
+           FIND FRIEND
+        ========================================== */
+
+        function findFriend(query) {
+
+            const cleanQuery = query
+                .toLowerCase()
+                .trim()
+                .replace(/[.,!?]/g, "");
+
+            /* Exact/full-name matching */
+
+            for (const name in friends) {
+
+                const cleanName = name
+                    .toLowerCase()
+                    .replace(/[.,!?]/g, "");
+
+                if (
+                    cleanQuery.includes(cleanName) ||
+                    cleanName.includes(cleanQuery)
+                ) {
+                    return name;
+                }
+            }
+
+
+            /* First-name / nickname-style matching */
+
+            for (const name in friends) {
+
+                const parts = name
+                    .toLowerCase()
+                    .replace(/[.,!?]/g, "")
+                    .split(/\s+/);
+
+                for (const part of parts) {
+
+                    if (
+                        part.length > 2 &&
+                        cleanQuery.includes(part)
+                    ) {
+                        return name;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+
+        /* =========================================
+           ADD MESSAGE
+        ========================================== */
+
+        function addMessage(text, type) {
+
+            const chat = document.getElementById("chat");
+
+            const message = document.createElement("div");
+
+            message.className =
+                "message " +
+                (type === "user"
+                    ? "user-message"
+                    : "bot-message");
+
+            message.innerHTML = text;
+
+            chat.appendChild(message);
+
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: "smooth"
+            });
+
+            return message;
+        }
+
+
+        /* =========================================
+           SHOW PROFILE
+        ========================================== */
+
+        function showProfile(name) {
+
+            const friend = friends[name];
+
+            const safeName = escapeHTML(name);
+
+            const profileHTML = `
+
+                <div class="profile">
+
+                    <img
+                        src="${friend.photo}"
+                        alt="${safeName}"
+                        onerror="this.src='https://placehold.co/500x500/202020/ffffff?text=${encodeURIComponent(name)}'"
+                    >
+
+                    <div class="profile-info">
+
+                        <h2>${safeName}</h2>
+
+                        <div class="social-buttons">
+
+                            <a
+                                class="social-btn facebook"
+                                href="${friend.facebook}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Open ${safeName}'s Facebook"
+                            >
+                                <i class="fa-brands fa-facebook-f"></i>
+                                <span>Facebook</span>
+                            </a>
+
+                            <a
+                                class="social-btn instagram"
+                                href="${friend.instagram}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Open ${safeName}'s Instagram"
+                            >
+                                <i class="fa-brands fa-instagram"></i>
+                                <span>Instagram</span>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
+
+            addMessage(profileHTML, "bot");
+        }
+
+
+        /* =========================================
+           SEND MESSAGE
+        ========================================== */
+
+        function sendMessage() {
+
+            const input = document.getElementById("userInput");
+
+            const query = input.value.trim();
+
+            if (!query) {
+                return;
+            }
+
+
+            /* Hide welcome */
+
+            document.getElementById("welcome").style.display = "none";
+
+
+            /* User message */
+
+            addMessage(
+                escapeHTML(query),
+                "user"
+            );
+
+
+            /* Clear input */
+
+            input.value = "";
+
+
+            /* Thinking message */
+
+            const thinking = addMessage(
+                "FriendGPT is thinking... 🤔",
+                "bot"
+            );
+
+
+            /* Small delay */
+
+            setTimeout(() => {
+
+                thinking.remove();
+
+                const friendName = findFriend(query);
+
+                if (friendName) {
+
+                    addMessage(
+                        `Here's what I found about <strong>${escapeHTML(friendName)}</strong> 👀`,
+                        "bot"
+                    );
+
+                    showProfile(friendName);
+
+                } else {
+
+                    addMessage(
+                        "Hmm... I couldn't find that person in the friend group. 😅<br><br>Try using their first name or full name.",
+                        "bot"
+                    );
+
+                }
+
+            }, 800);
+
+        }
+
+
+        /* =========================================
+           SEND BUTTON
+        ========================================== */
+
+        document
+            .getElementById("sendBtn")
+            .addEventListener("click", sendMessage);
+
+
+        /* =========================================
+           ENTER KEY
+        ========================================== */
+
+        document
+            .getElementById("userInput")
+            .addEventListener("keydown", function(event) {
+
+                if (event.key === "Enter") {
+
+                    event.preventDefault();
+
+                    sendMessage();
+                }
+
+            });
+
+
+        /* =========================================
+           AUTO FOCUS
+        ========================================== */
+
+        window.addEventListener("load", () => {
+
+            document
+                .getElementById("userInput")
+                .focus();
+
+        });
+
+    </script>
+
+</body>
+</html>
